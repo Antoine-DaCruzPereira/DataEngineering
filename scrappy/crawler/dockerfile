@@ -1,0 +1,14 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# --- LA CORRECTION EST ICI ---
+# On dit à Python : "Regarde dans le dossier /app pour trouver les modules"
+ENV PYTHONPATH="${PYTHONPATH}:/app"
+
+CMD ["scrapy", "runspider", "paruvendu_spider.py"]

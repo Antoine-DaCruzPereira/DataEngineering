@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # Service 1 : La Base de Données
+  mongo:
+    image: mongo:latest
+    container_name: mon_mongo
+    ports:
+      - "27017:27017" # Ouvre le port pour que tu puisses voir les données avec Compass sur ton Mac
+    volumes:
+      - ./data_db:/data/db # PERSISTANCE : Sauvegarde les données dans un dossier "data_db" sur ton Mac
+    networks:
+      - scraping_network
+
+  # Service 2 : Ton Robot Scrapy
+  scraper:
+    build: . # Construit l'image à partir du Dockerfile courant
+    container_name: mon_scraper
+    depends_on:
+      - mongo # Attend que Mongo démarre avant de se lancer
+    networks:
+      - scraping_network
+    # Optionnel : Si tu veux pouvoir lancer le script manuellement, commente la ligne 'command'
+    # command: scrapy crawl paruvendu_raw 
+
+networks:
+  scraping_network:
+    driver: bridge
