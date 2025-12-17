@@ -1,0 +1,5 @@
+exit
+db.dropDatabase()
+exit
+db.dropDatabase()
+use auto_data

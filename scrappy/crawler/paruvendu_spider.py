@@ -11,8 +11,6 @@ class ParuVenduSpider(scrapy.Spider):
         'ROBOTSTXT_OBEY': False,
         'DOWNLOAD_DELAY': 2,
         'COOKIES_ENABLED': False,
-        # C'EST ICI QUE ÇA SE JOUE :
-        # On dit au spider d'aller chercher la classe MongoPipeline dans le fichier pipelines.py
         'ITEM_PIPELINES': {
             'pipelines.MongoPipeline': 300,
         }
@@ -23,12 +21,22 @@ class ParuVenduSpider(scrapy.Spider):
         self.logger.info(f"--- PAGE SCANNÉE : {len(annonces)} annonces trouvées ---")
 
         for annonce in annonces:
-            # On envoie les données BRUTES au pipeline
+            titre = annonce.css('h3::text').get(default='').strip()
+            prix_brut = annonce.xpath('.//div[contains(text(), "€")]/text()').get(default='')
+            
+            # --- CORRECTION MAJEURE ICI ---
+            # Au lieu de tout coller, on prend chaque bout de texte et on les joint avec un espace " "
+            # Cela garantit d'avoir "2014 120 000 km" et pas "2014120000km"
+            text_elements = annonce.css('*::text').getall()
+            infos_brutes = " ".join([t.strip() for t in text_elements if t.strip()])
+            
+            lien = response.urljoin(annonce.css('a::attr(href)').get())
+
             yield {
-                'titre': annonce.css('h3::text').get(default='').strip(),
-                'prix_brut': annonce.xpath('.//div[contains(text(), "€")]/text()').get(default=''),
-                'infos_brutes': " ".join(annonce.css('div[class*="text-"] ::text').getall()),
-                'lien': response.urljoin(annonce.css('a::attr(href)').get())
+                'titre': titre,
+                'prix_brut': prix_brut,
+                'infos_brutes': infos_brutes,
+                'lien': lien
             }
 
         # Pagination
