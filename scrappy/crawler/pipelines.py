@@ -6,8 +6,6 @@ class MongoPipeline:
         self.client = pymongo.MongoClient("mongodb://mongo:27017/")
         self.db = self.client["auto_data"]
         self.collection = self.db["paruvendu"]
-
-        # Mapping pour corriger les marques bizarres si besoin
         self.BRAND_MAPPING = {
             "Ds": "Citroën",
             "Vw": "Volkswagen"
@@ -24,13 +22,11 @@ class MongoPipeline:
         url_match = re.search(r'voiture-occasion/([^/]+)/', lien)
         
         if url_match:
-            # On trouve la marque dans l'URL (ex: "land-rover", "peugeot")
             marque_brute = url_match.group(1).replace('-', ' ').capitalize()
-        else:
-            # Si l'URL est bizarre, on revient à l'ancienne méthode (premier mot du titre)
+        else: #Si l'URL ne donne rien, on tente avec le titre
             marque_brute = titre.split(' ')[0].strip().capitalize() if titre else "Inconnue"
 
-        # On applique le mapping final (ex: si l'URL dit "Ds", on met "Citroën")
+        # Correction des marques spécifiques
         marque = self.BRAND_MAPPING.get(marque_brute, marque_brute)
 
         # --- 2. KILOMÉTRAGE ---
@@ -66,7 +62,7 @@ class MongoPipeline:
         # --- 5. SAUVEGARDE ---
         document = {
             'titre': titre,
-            'marque': marque, # Maintenant ce sera "Peugeot" même si le titre est "208"
+            'marque': marque,
             'prix': int(prix_clean) if prix_clean else 0,
             'caracteristiques': {
                 'annee': annee,
@@ -81,7 +77,7 @@ class MongoPipeline:
             {'lien': lien}, {'$set': document}, upsert=True
         )
         
-        print(f"✅ {marque} | {titre[:15]}... | {km} km")
+        print(f"Marque {marque} | {titre[:15]}... | {km} km")
         return item
 
     def close_spider(self, spider):

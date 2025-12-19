@@ -3,7 +3,7 @@ import re
 
 class ParuVenduSpider(scrapy.Spider):
     name = "paruvendu"
-    PAGE_MAX = 5
+    PAGE_MAX = 25
     start_urls = ['https://www.paruvendu.fr/auto-moto/listefo/default/default?p=1']
 
     custom_settings = {
@@ -23,10 +23,6 @@ class ParuVenduSpider(scrapy.Spider):
         for annonce in annonces:
             titre = annonce.css('h3::text').get(default='').strip()
             prix_brut = annonce.xpath('.//div[contains(text(), "€")]/text()').get(default='')
-            
-            # --- CORRECTION MAJEURE ICI ---
-            # Au lieu de tout coller, on prend chaque bout de texte et on les joint avec un espace " "
-            # Cela garantit d'avoir "2014 120 000 km" et pas "2014120000km"
             text_elements = annonce.css('*::text').getall()
             infos_brutes = " ".join([t.strip() for t in text_elements if t.strip()])
             
