@@ -1,2 +1,8 @@
-scrapy
-pymongo
+# Web Scraping
+Scrapy==2.13.4
+
+# Database
+pymongo==4.15.5
+
+# Web Framework
+streamlit==1.52.2
