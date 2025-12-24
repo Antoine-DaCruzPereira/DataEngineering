@@ -105,8 +105,8 @@
                         <td>{{ v.caracteristiques.boite }}</td>
                         
                         <td class="text-end pe-4">
-                            <a href="{{ v.lien }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                                Voir l'annonce
+                            <a href="{{ url_for('main.details_voiture', voiture_id=v._id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                             Détails
                             </a>
                         </td>
                     </tr>

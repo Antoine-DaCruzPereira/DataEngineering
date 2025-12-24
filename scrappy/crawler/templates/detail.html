@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ v.titre }} - Détails</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+    <a href="/" class="btn btn-outline-secondary mb-4">← Retour à la liste</a>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm p-4 mb-4">
+                <h1 class="h3 fw-bold mb-2">{{ v.titre }}</h1>
+                <h4 class="text-primary fw-bold mb-4">{{ "{:,.0f}".format(v.prix).replace(',', ' ') }} €</h4>
+                
+                <hr>
+                
+                <h5 class="mb-3">Caractéristiques</h5>
+                <div class="row g-3">
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 bg-light rounded text-center">
+                            <small class="text-muted">Année</small><br>
+                            <strong>{{ v.caracteristiques.annee }}</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 bg-light rounded text-center">
+                            <small class="text-muted">Kilométrage</small><br>
+                            <strong>{{ "{:,.0f}".format(v.caracteristiques.kilometrage).replace(',', ' ') }} km</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 bg-light rounded text-center">
+                            <small class="text-muted">Boîte</small><br>
+                            <strong>{{ v.caracteristiques.boite }}</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 bg-light rounded text-center">
+                            <small class="text-muted">Énergie</small><br>
+                            <strong>{{ v.caracteristiques.energie }}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <a href="{{ v.lien }}" target="_blank" class="btn btn-success w-100 btn-lg">
+                        Lien vers le site de l'annonce
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <h5 class="mb-3 text-muted">Véhicules similaires</h5>
+            {% for s in suggestions %}
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h6 class="card-title small fw-bold">{{ s.titre }}</h6>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span class="text-success fw-bold">{{ "{:,.0f}".format(s.prix).replace(',', ' ') }} €</span>
+                        <a href="{{ url_for('main.details_voiture', voiture_id=s._id) }}" class="btn btn-sm btn-outline-primary">Voir</a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+                <p class="text-muted small">Aucun véhicule similaire trouvé.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

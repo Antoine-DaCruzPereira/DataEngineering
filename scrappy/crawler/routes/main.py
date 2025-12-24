@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, url_for
 from database import get_collection 
+from bson.objectid import ObjectId
 import math
 
 bp = Blueprint('main', __name__)
@@ -39,3 +40,28 @@ def afficher_annonces():
 
     except Exception as e:
         return f"Erreur : {e}"
+    
+@bp.route('/voiture/<voiture_id>')
+def details_voiture(voiture_id):
+        try:
+            collection = get_collection()
+        
+        # 1. On cherche LA voiture précise par son ID
+            voiture = collection.find_one({"_id": ObjectId(voiture_id)})
+        
+            if not voiture:
+                return "Voiture introuvable", 404
+
+        # 2. SUGGESTIONS : On cherche des voitures similaires
+        # (Même marque, prix +/- 20%, et pas la voiture elle-même)
+            prix = voiture.get('prix', 0)
+            suggestions = list(collection.find({
+                "marque": voiture['marque'],
+                "prix": {"$gte": prix * 0.8, "$lte": prix * 1.2},
+                "_id": {"$ne": ObjectId(voiture_id)} # On exclut la voiture actuelle
+            }).limit(3))
+
+            return render_template('detail.html', v=voiture, suggestions=suggestions)
+
+        except Exception as e:
+            return f"Erreur : {e}"
