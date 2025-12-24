@@ -14,7 +14,7 @@
 
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>📊 Statistiques par Marque (Top 15)</h1>
+        <h1>Statistiques par Marque</h1>
         <a href="/" class="btn btn-outline-secondary">← Retour aux annonces</a>
     </div>
 
@@ -42,7 +42,7 @@
     const countData = {{ data_counts | tojson }};
     const priceData = {{ data_prices | tojson }};
 
-    // --- CONFIGURATION GRAPHIQUE 1 (Volumes) ---
+    // --- GRAPHIQUE 1  ---
     const ctxCount = document.getElementById('countChart');
     new Chart(ctxCount, {
         type: 'bar', 
@@ -50,8 +50,8 @@
             labels: labels, 
             datasets: [{
                 label: "Nombre d'annonces",
-                data: countData, // Les chiffres en axe Y
-                backgroundColor: 'rgba(54, 162, 235, 0.6)', // Couleur bleue
+                data: countData, 
+                backgroundColor: 'rgba(54, 162, 235, 0.6)', 
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1,
                 borderRadius: 5
@@ -59,12 +59,10 @@
         },
         options: {
             responsive: true,
-            plugins: { legend: { display: false } }, // Cache la légende inutile
+            plugins: { legend: { display: false } }, 
             scales: { y: { beginAtZero: true } }
         }
     });
-
-    // --- CONFIGURATION GRAPHIQUE 2 (Prix Moyens) ---
     const ctxPrice = document.getElementById('priceChart');
     new Chart(ctxPrice, {
         type: 'bar',
@@ -73,7 +71,7 @@
             datasets: [{
                 label: 'Prix Moyen (€)',
                 data: priceData,
-                backgroundColor: 'rgba(75, 192, 192, 0.6)', // Couleur verte
+                backgroundColor: 'rgba(75, 192, 192, 0.6)', 
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1,
                 borderRadius: 5
@@ -86,7 +84,6 @@
                 y: { 
                     beginAtZero: true,
                     ticks: {
-                        // Ajoute le symbole € sur l'axe Y
                         callback: function(value) { return value + ' €'; }
                     }
                 } 

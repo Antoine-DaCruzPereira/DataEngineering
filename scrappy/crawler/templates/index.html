@@ -21,20 +21,25 @@
     
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 fw-bold"> Scrap ParuVendu</h1>
+            <h1 class="h3 fw-bold">🚗 Scrap ParuVendu</h1>
             <span class="badge bg-secondary rounded-pill">{{ total }} annonces</span>
         </div>
         
         <div class="d-flex gap-2">
+            <a href="{{ url_for('export.exporter_csv', **request.args) }}" class="btn btn-success">
+                📥 Export CSV
+            </a>
+
+            <a href="/statistiques" class="btn btn-primary">
+                📊 Stats
+            </a>
+
             <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#zoneFiltres" aria-expanded="false">
                 🔍 Filtrer
             </button>
             
             <a href="/" class="btn btn-dark">🔄 Actualiser</a>
         </div>
-    </div>
-     <div class="d-flex gap-2">
-        <a href="/statistiques" class="btn btn-success">📊 Voir les Stats</a>
     </div>
 
     <div class="collapse {% if request.args %}show{% endif %}" id="zoneFiltres">
@@ -81,7 +86,7 @@
                         <th>Kilométrage</th>
                         <th>Énergie</th>
                         <th>Boîte</th>
-                        <th class="text-end pe-4">Lien vers le site original</th>
+                        <th class="text-end pe-4">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -101,17 +106,16 @@
                         
                         <td class="text-end pe-4">
                             <a href="{{ v.lien }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                                Cliquer ici
+                                Voir l'annonce
                             </a>
-                            
                         </td>
                     </tr>
                     {% else %}
                     <tr>
                         <td colspan="7" class="text-center py-5">
                             <div class="text-muted">
-                                <h4>Aucune voiture trouvée</h4>
-                                <p>Essaie de modifier tes filtres ou d'élargir ta recherche.</p>
+                                <h4>Aucune voiture trouvée 😢</h4>
+                                <p>Essaie de modifier tes filtres.</p>
                             </div>
                         </td>
                     </tr>
@@ -125,7 +129,7 @@
             <ul class="pagination justify-content-center mb-0">
                 
                 <li class="page-item {% if page == 1 %}disabled{% endif %}">
-                    <a class="page-link" href="{{ url_for('afficher_annonces', page=page-1, marque=request.args.get('marque'), prix_max=request.args.get('prix_max'), km_max=request.args.get('km_max'), annee_min=request.args.get('annee_min')) }}">
+                    <a class="page-link" href="{{ url_for('main.afficher_annonces', page=page-1, marque=request.args.get('marque'), prix_max=request.args.get('prix_max'), km_max=request.args.get('km_max'), annee_min=request.args.get('annee_min')) }}">
                         &laquo; Précédent
                     </a>
                 </li>
@@ -137,7 +141,7 @@
                 </li>
 
                 <li class="page-item {% if page == total_pages %}disabled{% endif %}">
-                    <a class="page-link" href="{{ url_for('afficher_annonces', page=page+1, marque=request.args.get('marque'), prix_max=request.args.get('prix_max'), km_max=request.args.get('km_max'), annee_min=request.args.get('annee_min')) }}">
+                    <a class="page-link" href="{{ url_for('main.afficher_annonces', page=page+1, marque=request.args.get('marque'), prix_max=request.args.get('prix_max'), km_max=request.args.get('km_max'), annee_min=request.args.get('annee_min')) }}">
                         Suivant &raquo;
                     </a>
                 </li>
@@ -145,15 +149,12 @@
             </ul>
         </nav>
         {% endif %}
-        </div> 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-    
-   
-</div>
-
-© 2024 Scrappy Project By Soen and Antoine 
-        </div>
     </div>
+
+    <div class="text-center mt-4 mb-4 text-muted small">
+        © 2024 Scrappy Project By Soen and Antoine 🚀
+    </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
