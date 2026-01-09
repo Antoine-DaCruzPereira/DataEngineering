@@ -6,3 +6,7 @@ pymongo==4.15.5
 
 # Web Framework
 streamlit==1.52.2
+
+# Data Visualization
+matplotlib==3.8.4
+seaborn==0.13.2
