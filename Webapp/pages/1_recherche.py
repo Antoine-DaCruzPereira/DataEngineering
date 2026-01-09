@@ -91,6 +91,7 @@ else:
     st.markdown("---")
     
     if st.session_state.show_filters:
+        # Fond noir semi-transparent
         st.markdown("""
         <style>
         .modal-overlay {
@@ -101,90 +102,77 @@ else:
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 9999;
-        }
-        .modal-content {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.3);
-            max-width: 600px;
-            width: 90%;
-            z-index: 10000;
-            max-height: 80vh;
-            overflow-y: auto;
+            pointer-events: none;
         }
         </style>
         <div class="modal-overlay"></div>
         """, unsafe_allow_html=True)
         
-        # Créer un container pour le contenu du modal
-        modal_container = st.container()
+        # Utiliser des colonnes pour centrer le contenu
+        col_left, col_center, col_right = st.columns([1, 2, 1])
         
-        with modal_container:
-            st.markdown("<div class='modal-content'>", unsafe_allow_html=True)
-            st.subheader("Filtres de Recherche")
-            st.markdown("---")
-            
-            filter_col1, filter_col2 = st.columns(2)
-            
-            with filter_col1:
-                if "marque" in df_original.columns:
-                    st.session_state.selected_brands = st.multiselect(
-                        "Sélectionnez une marque:",
-                        df_original["marque"].unique(),
-                        default=st.session_state.selected_brands,
-                        key="filter_brands"
-                    )
+        with col_center:
+            # Container blanc avec les filtres
+            with st.container(border=True):
+                st.subheader("Filtres de Recherche")
+                st.markdown("---")
                 
-                if "prix" in df_original.columns:
-                    st.session_state.prix_range = st.slider(
-                        "Sélectionnez une plage de prix:",
-                        min_value=int(df_original["prix"].min()) if df_original["prix"].min() > 0 else 0,
-                        max_value=int(df_original["prix"].max()) if df_original["prix"].max() > 0 else 100000,
-                        value=st.session_state.prix_range,
-                        key="filter_prix"
-                    )
-            
-            with filter_col2:
-                if "annee" in df_original.columns:
-                    st.session_state.annee_range = st.slider(
-                        "Sélectionnez une plage d'années:",
-                        min_value=int(df_original["annee"].min()) if df_original["annee"].min() > 0 else 1990,
-                        max_value=int(df_original["annee"].max()) if df_original["annee"].max() > 0 else 2024,
-                        value=st.session_state.annee_range,
-                        key="filter_annee"
-                    )
+                filter_col1, filter_col2 = st.columns(2)
                 
-                if "energie" in df_original.columns:
-                    st.session_state.selected_energy = st.multiselect(
-                        "Sélectionnez une énergie:",
-                        df_original["energie"].unique(),
-                        default=st.session_state.selected_energy,
-                        key="filter_energie"
-                    )
-            
-            st.markdown("---")
-            
-            button_col1, button_col2 = st.columns(2)
-            
-            with button_col1:
-                if st.button("Valider", use_container_width=True, key="validate_filters"):
-                    st.session_state.show_filters = False
-                    st.session_state.filters_applied = True
-                    st.rerun()
-            
-            with button_col2:
-                if st.button("Annuler", use_container_width=True, key="cancel_filters"):
-                    st.session_state.show_filters = False
-                    st.session_state.selected_brands = []
-                    st.session_state.prix_range = (0, 100000)
-                    st.session_state.annee_range = (1990, 2024)
-                    st.session_state.selected_energy = []
-                    st.rerun()
+                with filter_col1:
+                    if "marque" in df_original.columns:
+                        st.session_state.selected_brands = st.multiselect(
+                            "Sélectionnez une marque:",
+                            df_original["marque"].unique(),
+                            default=st.session_state.selected_brands,
+                            key="filter_brands"
+                        )
+                    
+                    if "prix" in df_original.columns:
+                        st.session_state.prix_range = st.slider(
+                            "Sélectionnez une plage de prix:",
+                            min_value=int(df_original["prix"].min()) if df_original["prix"].min() > 0 else 0,
+                            max_value=int(df_original["prix"].max()) if df_original["prix"].max() > 0 else 100000,
+                            value=st.session_state.prix_range,
+                            key="filter_prix"
+                        )
+                
+                with filter_col2:
+                    if "annee" in df_original.columns:
+                        st.session_state.annee_range = st.slider(
+                            "Sélectionnez une plage d'années:",
+                            min_value=int(df_original["annee"].min()) if df_original["annee"].min() > 0 else 1990,
+                            max_value=int(df_original["annee"].max()) if df_original["annee"].max() > 0 else 2024,
+                            value=st.session_state.annee_range,
+                            key="filter_annee"
+                        )
+                    
+                    if "energie" in df_original.columns:
+                        st.session_state.selected_energy = st.multiselect(
+                            "Sélectionnez une énergie:",
+                            df_original["energie"].unique(),
+                            default=st.session_state.selected_energy,
+                            key="filter_energie"
+                        )
+                
+                st.markdown("---")
+                
+                button_col1, button_col2 = st.columns(2)
+                
+                with button_col1:
+                    if st.button("Valider", use_container_width=True, key="validate_filters"):
+                        st.session_state.show_filters = False
+                        st.session_state.filters_applied = True
+                        st.rerun()
+                
+                with button_col2:
+                    if st.button("Annuler", use_container_width=True, key="cancel_filters"):
+                        st.session_state.show_filters = False
+                        st.session_state.selected_brands = []
+                        st.session_state.prix_range = (0, 100000)
+                        st.session_state.annee_range = (1990, 2024)
+                        st.session_state.selected_energy = []
+                        st.rerun()
             
             st.markdown("</div>", unsafe_allow_html=True)
     
