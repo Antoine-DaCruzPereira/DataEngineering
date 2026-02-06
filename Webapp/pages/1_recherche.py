@@ -91,23 +91,6 @@ else:
     st.markdown("---")
     
     if st.session_state.show_filters:
-        # Fond noir semi-transparent
-        st.markdown("""
-        <style>
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 9999;
-            pointer-events: none;
-        }
-        </style>
-        <div class="modal-overlay"></div>
-        """, unsafe_allow_html=True)
-        
         # Utiliser des colonnes pour centrer le contenu
         col_left, col_center, col_right = st.columns([1, 2, 1])
         
@@ -121,19 +104,47 @@ else:
                 
                 with filter_col1:
                     if "marque" in df_original.columns:
+                        # Filtrer les marques qui ont au moins 2 annonces
+                        marques_counts = df_original["marque"].value_counts()
+                        marques_valides = marques_counts[marques_counts >= 2].index.tolist()
+                        
                         st.session_state.selected_brands = st.multiselect(
                             "Sélectionnez une marque:",
-                            df_original["marque"].unique(),
+                            marques_valides,
                             default=st.session_state.selected_brands,
                             key="filter_brands"
                         )
                     
                     if "prix" in df_original.columns:
+                        prix_min_db = int(df_original["prix"].min()) if df_original["prix"].min() > 0 else 0
+                        prix_max_db = int(df_original["prix"].max()) if df_original["prix"].max() > 0 else 100000
+                        
+                        st.write("Plage de prix:")
+                        prix_col1, prix_col2 = st.columns(2)
+                        
+                        with prix_col1:
+                            prix_min_manual = st.number_input(
+                                "Prix minimum (€):",
+                                min_value=prix_min_db,
+                                max_value=prix_max_db,
+                                value=st.session_state.prix_range[0],
+                                key="prix_min_input"
+                            )
+                        
+                        with prix_col2:
+                            prix_max_manual = st.number_input(
+                                "Prix maximum (€):",
+                                min_value=prix_min_db,
+                                max_value=prix_max_db,
+                                value=st.session_state.prix_range[1],
+                                key="prix_max_input"
+                            )
+                        
                         st.session_state.prix_range = st.slider(
-                            "Sélectionnez une plage de prix:",
-                            min_value=int(df_original["prix"].min()) if df_original["prix"].min() > 0 else 0,
-                            max_value=int(df_original["prix"].max()) if df_original["prix"].max() > 0 else 100000,
-                            value=st.session_state.prix_range,
+                            "Ou utilisez le curseur:",
+                            min_value=prix_min_db,
+                            max_value=prix_max_db,
+                            value=(prix_min_manual, prix_max_manual),
                             key="filter_prix"
                         )
                 
@@ -173,8 +184,6 @@ else:
                         st.session_state.annee_range = (1990, 2024)
                         st.session_state.selected_energy = []
                         st.rerun()
-            
-            st.markdown("</div>", unsafe_allow_html=True)
     
     df = df_original.copy()
     
