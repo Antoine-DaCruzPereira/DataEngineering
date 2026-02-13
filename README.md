@@ -35,9 +35,56 @@ Ce fichier permet de lancer tout l'environnement en une seule commande.
 * **Rôle :** Il crée et gère deux codes ci-dessus qui fonctionnent ensemble :
     1.  **MongoDB :** La base de données qui tourne dans un conteneur .
     2.  **Crawler :** Le code Python qui s'exécute.
+    3.  **Webapp :** L'interface utilisateur Streamlit pour visualiser les données stockées.
 
-Il relie les deux  pour qu'ils puissent communiquer.
+Il relie les trois briques pour qu'elles puissent communiquer.
 
+
+## Structure de la Webapp
+
+Cette partie concerne l'interface utilisateur réalisée avec **Streamlit**, permettant de visualiser et d'analyser les données récoltées.
+
+### 1. `home.py`
+Point d'entrée de l'application. Affiche la page d'accueil et le titre du projet.
+
+![Page d'accueil](media/homepage.png)
+
+### 2. `pages/1_recherche.py`
+Page dédiée à l'exploration des données.
+* **Connexion MongoDB :** Récupère les données brutes depuis la base de données via `pymongo`.
+* **Affichage :** Présente les annonces sous forme de tableau interactif pour faciliter la recherche.
+
+![Page de recherche](media/recherche.png)
+
+### 3. `pages/2_statistiques.py`
+Page dédiée à l'analyse approfondie du marché automobile.
+* **Tableau de bord complet :** Organisé en plusieurs onglets (Vue d'ensemble, Analyse des prix, Analyse du marché, Carburants & Boite, etc.).
+* **Visualisation :** Utilise `matplotlib` et `seaborn` pour générer des graphiques sur les corrélations entre prix, kilométrage, et année, ainsi que la répartition par carburant et boîte de vitesse.
+
+![Page de statistiques](media/statistique.png)
+
+## Structure du Projet 
+
+
+```
+.
+├── docker-compose.yml      # Orchestration des conteneurs (App + BD + Spider)
+├── dockerfile              # Image Docker pour l'application Streamlit
+├── requirements.txt        # Dépendances Python globales
+├── README.md               # Documentation du projet
+├── scrappy/
+│   └── crawler/            # Dossier du Crawler Scrapy
+│       ├── paruvendu_spider.py # Le spider qui navigue sur le site
+│       ├── pipelines.py    # Nettoyage et insertion en base
+│       ├── database.py     # Configuration MongoDB
+│       ├── dockerfile      # Image Docker spécifique au Crawler
+│       └── requirements.txt # Dépendances spécifiques au Crawler
+└── Webapp/                 # Dossier de l'Application Streamlit
+    ├── home.py             # Page d'accueil
+    └── pages/
+        ├── 1_recherche.py  # Page de recherche
+        └── 2_statistiques.py # Page de statistiques
+```
 
 ## Comment lancer le projet
 

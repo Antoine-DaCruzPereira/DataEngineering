@@ -16,6 +16,25 @@ st.markdown("---")
 st.info("Utilisez le menu latéral pour naviguer vers les différentes pages de l'application.")
 
 st.markdown("---")
+
+# Affichage du README
+try:
+    # On essaie de lire le README à la racine
+    readme_path = "README.md"
+    if not os.path.exists(readme_path):
+        # Si on est dans le dossier Webapp, on remonte d'un cran
+        readme_path = "../README.md"
+        
+    if os.path.exists(readme_path):
+        with open(readme_path, "r", encoding="utf-8") as f:
+            readme_content = f.read()
+        st.markdown(readme_content, unsafe_allow_html=True)
+    else:
+        st.warning("README.md non trouvé.")
+except Exception as e:
+    st.error(f"Erreur lors de la lecture du README: {e}")
+
+st.markdown("---")
 st.markdown("<p style='text-align: center; color: gray;'>© 2025 Data Engineering - Projet Scrapping - DCP Antoine & Souprayen Soen</p>", 
             unsafe_allow_html=True)
 
