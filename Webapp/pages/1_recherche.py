@@ -3,17 +3,28 @@ import pandas as pd
 from pymongo import MongoClient
 import csv
 import io
+import os
 
 # Connexion à MongoDB
 @st.cache_resource
 def get_mongo_client():
     try:
-        client = MongoClient("mongodb://localhost:27017/")
+        # C'EST ICI LA CORRECTION MAJEURE :
+        # On récupère l'adresse donnée par Docker ("mongodb://mongo:27017/")
+        # Si on est en local (hors docker), on utilise localhost.
+        mongo_uri = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
+        
+        # Pour le débogage (s'affiche dans les logs du terminal)
+        print(f"🔌 Tentative de connexion à : {mongo_uri}")
+        
+        client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
+        # Petit test de connexion ("ping") pour vérifier que ça marche tout de suite
+        client.server_info()
         return client
     except Exception as e:
-        st.error(f"Impossible de se connecter à MongoDB: {e}")
+        st.error(f"❌ Impossible de se connecter à MongoDB ({mongo_uri}) : {e}")
         return None
-
+        
 def get_voitures():
     """Récupère toutes les voitures de la base de données"""
     try:

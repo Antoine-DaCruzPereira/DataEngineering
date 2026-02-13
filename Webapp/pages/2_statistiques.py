@@ -1,16 +1,26 @@
 import streamlit as st
 import pandas as pd
 from pymongo import MongoClient
+import matplotlib
+# ---------------------------------------------------------
+# CORRECTION 1 : Indispensable pour Docker (mode sans écran)
+matplotlib.use('Agg') 
+# ---------------------------------------------------------
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import os # <--- Nécessaire pour lire la variable Docker
 
 st.set_page_config(page_title="Statistiques", page_icon="📊", layout="wide")
 
 @st.cache_resource
 def get_mongo_client():
     try:
-        client = MongoClient("mongodb://localhost:27017/")
+        # ---------------------------------------------------------
+        # CORRECTION 2 : Connexion compatible Docker & Local
+        mongo_uri = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
+        client = MongoClient(mongo_uri)
+        # ---------------------------------------------------------
         return client
     except Exception as e:
         st.error(f"❌ Impossible de se connecter à MongoDB: {e}")
@@ -34,6 +44,19 @@ def get_voitures():
         
         if "_id" in df.columns:
             df = df.drop("_id", axis=1)
+            
+        # ---------------------------------------------------------
+        # CORRECTION 3 : Conversion Texte -> Nombres (Vital pour les graphes)
+        # Sans ça, matplotlib ne peut rien tracer.
+        numeric_cols = ['prix', 'annee', 'kilometrage', 'km']
+        for col in numeric_cols:
+            if col in df.columns:
+                df[col] = pd.to_numeric(df[col], errors='coerce')
+        
+        # Si la colonne s'appelle 'km' dans la base, on la renomme pour ton code
+        if 'km' in df.columns and 'kilometrage' not in df.columns:
+            df['kilometrage'] = df['km']
+        # ---------------------------------------------------------
         
         return df
     
@@ -43,10 +66,16 @@ def get_voitures():
 
 def flatten_caracteristiques(df):
     if 'caracteristiques' in df.columns:
-        carac_df = pd.json_normalize(df['caracteristiques'])
-        for col in carac_df.columns:
-            if col not in df.columns:
-                df[col] = carac_df[col]
+        # On vérifie que la colonne contient bien des dictionnaires
+        # (Parfois le scraper renvoie des chaines vides ou null)
+        # Cette petite vérif évite le crash "AttributeError"
+        try:
+            carac_df = pd.json_normalize(df['caracteristiques'])
+            for col in carac_df.columns:
+                if col not in df.columns:
+                    df[col] = carac_df[col]
+        except:
+            pass
     return df
 
 st.title("Statistiques - Marché de l'occasion")
@@ -57,6 +86,7 @@ df = flatten_caracteristiques(df)
 
 if df.empty:
     st.warning("Aucune donnée disponible")
+    st.info("Le scraper est-il en train de tourner ?")
 else:
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Vue d'ensemble", "Analyse des prix", "Analyse du marché", "Carburants & Boite", "Corrélations avancées", "Insights Avancés"])
     

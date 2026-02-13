@@ -8,13 +8,13 @@ services:
     ports:
       - "27017:27017" # Ouvre le port pour que tu puisses voir les données avec Compass sur ton Mac
     volumes:
-      - mongo_data:/data/db
+      - ./scrappy/crawler/data_db:/data/db
     networks:
       - scraping_network
 
   # Service 2 : Ton Robot Scrapy
   scraper:
-    build: . # Construit l'image à partir du Dockerfile courant
+    build: ./scrappy/crawler
     container_name: mon_scraper
     depends_on:
       - mongo # Attend que Mongo démarre avant de se lancer
