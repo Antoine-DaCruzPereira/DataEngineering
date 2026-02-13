@@ -2,25 +2,22 @@ import streamlit as st
 import pandas as pd
 from pymongo import MongoClient
 import matplotlib
-# ---------------------------------------------------------
-# CORRECTION 1 : Indispensable pour Docker (mode sans écran)
 matplotlib.use('Agg') 
-# ---------------------------------------------------------
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-import os # <--- Nécessaire pour lire la variable Docker
+import os 
 
 st.set_page_config(page_title="Statistiques", page_icon="📊", layout="wide")
 
 @st.cache_resource
 def get_mongo_client():
     try:
-        # ---------------------------------------------------------
-        # CORRECTION 2 : Connexion compatible Docker & Local
+
         mongo_uri = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
         client = MongoClient(mongo_uri)
-        # ---------------------------------------------------------
+
         return client
     except Exception as e:
         st.error(f"❌ Impossible de se connecter à MongoDB: {e}")

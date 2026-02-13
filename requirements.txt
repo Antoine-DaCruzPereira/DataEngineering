@@ -1,0 +1,7 @@
+streamlit
+scrapy
+pymongo
+pandas
+plotly
+matplotlib
+seaborn

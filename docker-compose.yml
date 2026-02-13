@@ -1,28 +1,36 @@
 version: '3.8'
 
 services:
-  # Service 1 : La Base de Données
+
   mongo:
-    image: mongo:latest
+    image: mongo:4.4.6
     container_name: mon_mongo
     ports:
-      - "27017:27017" # Ouvre le port pour que tu puisses voir les données avec Compass sur ton Mac
+      - "27017:27017"
     volumes:
-      - ./scrappy/crawler/data_db:/data/db
-    networks:
-      - scraping_network
+      - ./data_mongo:/data/db
+    command: --bind_ip_all
 
-  # Service 2 : Ton Robot Scrapy
+
   scraper:
-    build: ./scrappy/crawler
+    build: .
     container_name: mon_scraper
     depends_on:
-      - mongo # Attend que Mongo démarre avant de se lancer
-    networks:
-      - scraping_network
-    # Optionnel : Si tu veux pouvoir lancer le script manuellement, commente la ligne 'command'
-    # command: scrapy crawl paruvendu_raw 
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/
+      - PYTHONPATH=/app/scrappy/crawler
+    command: sh -c "while true; do echo 'Lancement du Scraper...' && cd /app/scrappy/crawler && scrapy runspider paruvendu_spider.py && echo 'Pause de 5 minutes...' && sleep 300; done"
 
-networks:
-  scraping_network:
-    driver: bridge
+  webapp:
+    build: .
+    container_name: mon_dashboard
+    ports:
+      - "8501:8501"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/
+    volumes:
+      - .:/app
+    command: streamlit run Webapp/home.py --server.port=8501 --server.address=0.0.0.0

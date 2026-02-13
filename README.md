@@ -47,3 +47,7 @@ Il relie les deux  pour qu'ils puissent communiquer.
 
 ```bash
 docker-compose up --build
+```
+
+Lien du site : http://127.0.0.1:8501/
+
