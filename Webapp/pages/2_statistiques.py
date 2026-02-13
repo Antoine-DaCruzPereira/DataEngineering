@@ -187,19 +187,6 @@ else:
                 plt.xticks(rotation=45)
                 st.pyplot(fig)
         
-        st.markdown("---")
-        
-        if "prix" in df.columns and "boite" in df.columns:
-            st.write("**Prix moyen par type de boîte**")
-            prix_by_boite = df.groupby("boite")["prix"].mean().sort_values(ascending=False)
-            fig, ax = plt.subplots(figsize=(10, 6))
-            prix_by_boite.plot(kind='bar', ax=ax, color='lightyellow')
-            ax.set_xlabel("Type de boîte")
-            ax.set_ylabel("Prix moyen (€)")
-            ax.set_title("Prix Moyen par Type de Boîte")
-            ax.grid(axis='y', alpha=0.3)
-            plt.xticks(rotation=45)
-            st.pyplot(fig)
     
     # ========== TAB 3: ANALYSE DU MARCHÉ ==========
     with tab3:
@@ -342,7 +329,8 @@ else:
             if "prix" in df.columns and "kilometrage" in df.columns:
                 st.write("**Relation Prix vs Kilométrage**")
                 fig, ax = plt.subplots(figsize=(10, 6))
-                ax.scatter(df["kilometrage"].dropna(), df["prix"].dropna(), alpha=0.5, color='blue')
+                clean_df = df[["kilometrage", "prix"]].dropna()
+                ax.scatter(clean_df["kilometrage"], clean_df["prix"], alpha=0.5, color='blue')
                 ax.set_xlabel("Kilométrage (km)")
                 ax.set_ylabel("Prix (€)")
                 ax.set_title("Prix vs Kilométrage")
@@ -353,7 +341,8 @@ else:
             if "prix" in df.columns and "annee" in df.columns:
                 st.write("**Relation Prix vs Année**")
                 fig, ax = plt.subplots(figsize=(10, 6))
-                ax.scatter(df["annee"].dropna(), df["prix"].dropna(), alpha=0.5, color='green')
+                clean_df = df[["annee", "prix"]].dropna()
+                ax.scatter(clean_df["annee"], clean_df["prix"], alpha=0.5, color='green')
                 ax.set_xlabel("Année")
                 ax.set_ylabel("Prix (€)")
                 ax.set_title("Prix vs Année")
@@ -377,7 +366,8 @@ else:
             for energie in df["energie"].unique():
                 if pd.notna(energie):
                     df_energie = df[df["energie"] == energie]
-                    ax.scatter(df_energie["kilometrage"].dropna(), df_energie["prix"].dropna(), 
+                    clean_df_energie = df_energie[["kilometrage", "prix"]].dropna()
+                    ax.scatter(clean_df_energie["kilometrage"], clean_df_energie["prix"], 
                               alpha=0.5, label=energie, color=colors_map.get(energie, '#999999'))
             
             ax.set_xlabel("Kilométrage (km)")
@@ -404,7 +394,8 @@ else:
             for energie in df["energie"].unique():
                 if pd.notna(energie):
                     df_energie = df[df["energie"] == energie]
-                    ax.scatter(df_energie["annee"].dropna(), df_energie["prix"].dropna(), 
+                    clean_df_energie = df_energie[["annee", "prix"]].dropna()
+                    ax.scatter(clean_df_energie["annee"], clean_df_energie["prix"], 
                               alpha=0.5, label=energie, color=colors_map.get(energie, '#999999'))
             
             ax.set_xlabel("Année")
