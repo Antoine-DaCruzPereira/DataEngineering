@@ -17,12 +17,9 @@ st.info("Utilisez le menu latéral pour naviguer vers les différentes pages de 
 
 st.markdown("---")
 
-# Affichage du README
 try:
-    # On essaie de lire le README à la racine
     readme_path = "README.md"
     if not os.path.exists(readme_path):
-        # Si on est dans le dossier Webapp, on remonte d'un cran
         readme_path = "../README.md"
         
     if os.path.exists(readme_path):
